@@ -9,7 +9,7 @@ ws.on("connection", (ws) => {
   ws.on("message", (message) => {
     state = message.toString();
     console.log(message.toString());
-    ws.send("Copy that!");
+    ws.send(message.toString());
   });
 });
 

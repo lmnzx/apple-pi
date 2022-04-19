@@ -1,28 +1,26 @@
-import { useEffect } from "react";
+import { useCallback } from "react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 const Index = () => {
+  const { readyState, sendJsonMessage, lastJsonMessage } = useWebSocket("ws://localhost:4000");
 
-  let ws: WebSocket;
+  const handleClick = useCallback(() => {
+    sendJsonMessage({
+      message: "Hello from the client!"
+    });
+  }, []);
 
-  useEffect(() => {
-    ws = new WebSocket("ws://localhost:4000");
-
-    ws.onopen = () => {
-      console.log("Connected to server");
-      ws.send("Hello Server!");
-    };
-
-    ws.onmessage = (event) => {
-      console.log(event.data);
-    };
-  });
-
-
-
+  if (lastJsonMessage !== null) {
+    console.log(lastJsonMessage);
+  }
 
   return (
-
-    <h1>React ❤️ Chakra</h1>
+    <button
+      onClick={handleClick}
+      disabled={readyState !== ReadyState.OPEN}
+    >
+      Click Me To Send "Hello"
+    </button>
   )
 
 }
