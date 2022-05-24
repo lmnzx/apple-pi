@@ -14,7 +14,7 @@ const handleConnection = () => {
 
 const handleMessage = (ws: WebSocket, data: string) => {
   const json: data = JSON.parse(data);
-  if (json.client == "frontEnd") {
+  if (json.client == "client") {
     const response: data = {
       client: "server",
       motor: json.motor,
