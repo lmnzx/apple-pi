@@ -2,7 +2,13 @@ import {createServer} from 'http'
 import { Server } from "socket.io";
 
 const httpServer = createServer()
-const io = new Server(httpServer, {});
+const io = new Server(httpServer, {
+    cors: {
+        origin: '*',
+        methods: 'GET, POST, PUT, DELETE, OPTIONS',
+        allowedHeaders: 'Content-Type, Authorization, X-Requested-With, X-Socket-ID',
+    }
+});
 
 const port = process.env.PORT || 3000
 
