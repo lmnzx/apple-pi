@@ -1,4 +1,10 @@
 {
+  "name": "crust",
+  "author": {
+    "name": "Sayan Mallicl",
+    "email": "snyxmk@gmail.com"
+  },
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "esbuild": "^0.14.41",
