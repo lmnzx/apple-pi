@@ -1,8 +1,8 @@
 import { buildSync } from "esbuild";
 
 buildSync({
-	entryPoints: ["server.ts"],
-	outfile: "build/server.js",
+	entryPoints: ["src/server.ts"],
+	outfile: "dist/server.js",
 	bundle: true,
 	minify: true,
 	platform: "node",
