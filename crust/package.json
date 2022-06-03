@@ -15,6 +15,6 @@
   },
   "scripts": {
       "build": "node build.js",
-      "start": "node build/server.js"
+      "start": "node dist/server.js"
   }
 }
