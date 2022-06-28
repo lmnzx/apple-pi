@@ -1,7 +1,17 @@
 import fastify from "fastify";
 
 const server = fastify({
-  logger: true,
+  logger: {
+    transport: {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+        translateTime: true,
+        ignore: "pid,hostname,reqId,responseTime,req,res",
+        messageFormat: "{msg} [id={reqId} {req.method} {req.url}]",
+      },
+    },
+  },
 });
 
 server.get("/", async (request, reply) => {
