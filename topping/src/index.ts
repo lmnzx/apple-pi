@@ -46,6 +46,10 @@ const server = fastify({
     email: string;
   };
 
+  type LoginToken = {
+    token: string;
+  };
+
   server.register(cors, {
     origin: "*",
   });
@@ -66,15 +70,42 @@ const server = fastify({
       server.log.info("User created");
     }
     const uuid = randomUUID();
-    redis.set(request.body.email, uuid, "EX", 60 * 60 * 2); // 2 hours expiration
+    redis.set(uuid, request.body.email, "EX", 60 * 60 * 2); // 2 hours expiration
     const info = await transporter.sendMail({
       from: '"Lemon 🍋" <noreply@apple.pi>',
       to: request.body.email,
       subject: "Login Url",
-      text: `http://localhost:3000/auth/${uuid}`,
+      html: `Click here to <a href="http://localhost:3000/auth/${uuid}">Login</a>`,
     });
     server.log.info("Message sent: %s", info.messageId);
   });
+
+  server.get<{ Params: LoginToken }>(
+    "/verify/:token",
+    async (request, reply) => {
+      const token = request.params.token;
+      const email = async () => {
+        return await redis.get(token);
+      };
+      if (!email) {
+        return {
+          error: "Invalid token",
+        };
+      }
+      const user = await users.findOne({ email });
+      if (!user) {
+        return {
+          error: "Invalid token",
+        };
+      }
+      return {
+        message: {
+          isVerified: true,
+          email: user.email,
+        },
+      };
+    }
+  );
 
   await server.listen({ port: 8000 }, (err, address) => {
     if (err) {
