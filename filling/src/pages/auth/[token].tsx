@@ -7,7 +7,9 @@ function Auth() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch(`http://localhost:8000/verify/${token}`);
+      const response = await fetch(`http://localhost:8000/verify/${token}`, {
+        credentials: "include",
+      });
       const data = await response.json();
       console.log(data);
     })();

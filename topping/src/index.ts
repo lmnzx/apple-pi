@@ -53,14 +53,15 @@ const server = fastify({
   };
 
   server.register(cors, {
-    origin: "*",
+    origin: "http://localhost:3000",
+    credentials: true,
   });
 
   server.register(jwt, {
     secret: process.env.JWT_SECRET!,
     cookie: {
       cookieName: "token",
-      signed: true,
+      signed: false, // dev only
     },
   });
 
@@ -113,11 +114,18 @@ const server = fastify({
       const jwtToken = await server.jwt.sign({ email: user.email });
 
       reply
-        .setCookie("token", jwtToken)
+        .setCookie("sid", jwtToken, {
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365), // 1 year expiration
+          httpOnly: true,
+          secure: false,
+          sameSite: "lax",
+          path: "/",
+        })
         .code(200)
         .send({
           message: {
             message: "Successfully logged in",
+            email: user.email,
           },
         });
     }
