@@ -1,5 +1,7 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
+import jwt from "@fastify/jwt";
+import cookie from "@fastify/cookie";
 import { MongoClient } from "mongodb";
 import Redis from "ioredis";
 import { randomUUID } from "crypto";
@@ -54,6 +56,16 @@ const server = fastify({
     origin: "*",
   });
 
+  server.register(jwt, {
+    secret: process.env.JWT_SECRET!,
+    cookie: {
+      cookieName: "token",
+      signed: true,
+    },
+  });
+
+  server.register(cookie);
+
   server.get("/", async (request, reply) => {
     const allUsers = await users.find({}).toArray();
     return allUsers;
@@ -98,12 +110,16 @@ const server = fastify({
           error: "Invalid token",
         };
       }
-      return {
-        message: {
-          isVerified: true,
-          email: user.email,
-        },
-      };
+      const jwtToken = await server.jwt.sign({ email: user.email });
+
+      reply
+        .setCookie("token", jwtToken)
+        .code(200)
+        .send({
+          message: {
+            message: "Successfully logged in",
+          },
+        });
     }
   );
 
